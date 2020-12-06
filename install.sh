@@ -66,7 +66,7 @@ rm /tmp/archlinux.svg
 
 info "Making bootable drive and configurations"
 pacman -S --noconfirm grub efibootmgr
-mount -t vfat /dev/nvme0n1p3 /mnt/boot
+#mount -t vfat /dev/nvme0n1p3 /mnt/boot
 touch /boot/mach_kernel
 mkdir -p /boot/EFI/arch && touch /boot/EFI/arch/mach_kernel
 grub-install --target=x86_64-efi --efi-directory=/boot

@@ -4,6 +4,13 @@ You can follow the 'Readme.me' file and carry the set-up step by step or run the
 There are 3 scripts (pre, post and package install).
 
 ## Installation Instructions
+This is modified to dual boot macos and arch linux.
+
+### Fix unable to boot from USB Install Media
+When arch linux boot option shows, Press e to edit the parameters, add 
+```
+intel_iommu=on
+```
 
 ### Setting the font
 
@@ -14,7 +21,11 @@ setfont latarcyrheb-sun32
 ```
 If the system is not connected to internet through LAN, it can be connected using wifi
 ```
-wifi-menu
+iwctl
+device list
+station wlan0 scan
+station wlan0 get-networks
+station wlan0 connect "ssid"
 ```
 
 Git is not available in the start which can be installed using:
@@ -34,20 +45,20 @@ Following is my disk set-up. I am choosing not to create a special partition for
 | * | /home | ext4 | Linux Home System |
 
 ```{bash}
-cgdisk /dev/sda
+cgdisk /dev/nvme0n1
 ```
 
 #### Formatting the Drives
 
 ```{bash}
-mkfs.vfat -F32 /dev/sda1
-mkfs.ext4 -l main /dev/sda2
+mkfs.vfat -F32 /dev/nvme0n1p3
+mkfs.ext4 -l main /dev/nvme0n1p4
 ```
 
 ### Mounting drives for install
 ```{bash}
-mount /dev/sda2 /mnt
-mkdir /mnt/boot && mount /dev/sda1 /mnt/boot
+mount /dev/nvme0n1p4 /mnt
+mkdir /mnt/boot && mount /dev/nvme0n1p3 /mnt/boot
 lsblk 
 ```
 

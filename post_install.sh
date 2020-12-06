@@ -24,6 +24,8 @@ info "Installing Reflector to find the best mirror list for downloading."
 sudo pacman -Sy --noconfirm reflector
 sudo cp /etc/pacman.d/mirrorlist  /etc/pacman.d/mirrorlist.backup
 sudo reflector --verbose --latest 10 --sort rate --save /etc/pacman.d/mirrorlist
+#sudo reflector -c "CN" -f 12 -l 10 -n 12 --save /etc/pacman.d/mirrorlist
+
 
 info "Enabling Network Manager"
 sudo systemctl enable NetworkManager-dispatcher.service
@@ -31,11 +33,11 @@ sudo systemctl start NetworkManager-dispatcher.service
 
 sleep 5
 
-info "Installing pikaur"
-export PACK=PIKAUR
-sudo pacman --noconfirm -S cmake clang
+info "Installing yay"
+export PACK=YAY
+sudo pacman --noconfirm -S git
 mkdir /tmp/$PACK 
-git clone https://aur.archlinux.org/pikaur.git /tmp/$PACK
+sudo git clone https://aur.archlinux.org/yay.git /tmp/$PACK
 cd /tmp/$PACK
 makepkg -fsri
 

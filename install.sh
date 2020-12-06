@@ -66,13 +66,53 @@ rm /tmp/archlinux.svg
 
 info "Making bootable drive and configurations"
 pacman -S --noconfirm grub efibootmgr
-
-mkdir -p /boot/efi
-mount /dev/sda1 /boot/efi
-
-grub-install --target=x86_64-efi --bootloader-id=GRUB --efi-directory=/boot/efi
+mount -t vfat /dev/nvme0n1p3 /mnt/boot
+touch /boot/mach_kernel
+mkdir -p /boot/EFI/arch && touch /boot/EFI/arch/mach_kernel
+grub-install --target=x86_64-efi --efi-directory=/boot
 grub-mkconfig -o /boot/grub/grub.cfg
+mv /boot/EFI/arch/System/ /boot/
+rm -r /boot/EFI/
 
+#mkdir -p /boot/efi
+#mount /dev/nvme0n1p3 /boot/efi
+
+#grub-install --target=x86_64-efi --bootloader-id=GRUB --efi-directory=/boot/efi
+#grub-mkconfig -o /boot/grub/grub.cfg
+
+# Alternative for Setting up the bootloader to be loaded when hold alt(option) key during macbook pro power on.
+#First install the grub package from the Arch repositories
+#sudo pacman -S grub
+
+#Modify the following line in /etc/default/grub
+# GRUB_CMDLINE_LINUX_DEFAULT="quiet rootflags=data=writeback libata.force=noncq"
+#sed -i -e 's/.*GRUB_CMDLINE_LINUX_DEFAULT=.*/GRUB_CMDLINE_LINUX_DEFAULT="quiet rootflags=data=writeback libata.force=noncq"/' /etc/default/grub
+
+#Let's set up the boot directory to work with Apple's bootloader:
+
+#cd /boot
+#mkdir -p System/Library/CoreServices
+#touch mach_kernel
+#Then run the following commands to create a boot.efi file
+#grub-mkconfig -o /boot/grub/grub.cfg
+#grub-mkstandalone -o /boot/System/Library/CoreServices/boot.efi -d /usr/lib/grub/x86_64-efi -O x86_64-efi /boot/grub/grub.cfg
+#Modify the /boot/grub/grub.cfg and execute grub-mkstandalone if it does not boot
+#Sometimes, the "initrd initramfs-linux.img" might be missing in the grub.cfg, add this line to fix it 
+
+#Put the following in a new file at /boot/System/Library/CoreServices/SystemVersion.plist
+cat <<EOF >>/boot/System/Library/CoreServices/SystemVersion.plist
+<?xml version="1.0" encoding="utf-8"?>
+<plist version="1.0">
+<dict>
+    <key>ProductBuildVersion</key>
+    <string></string>
+    <key>ProductName</key>
+    <string>Linux</string>
+    <key>ProductVersion</key>
+    <string>Arch Linux</string>
+</dict>
+</plist>
+EOF
 
 sudo systemctl enable NetworkManager 
 sudo systemctl enable man-db.timer
